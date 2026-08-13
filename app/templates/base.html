@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HostelCare</title>
+</head>
+
+<body>
+
+{% with messages =
+get_flashed_messages() %}
+
+{% if messages %}
+
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+
+{% endif %}
+
+{% endwith %}
+
+{% block content %}
+{% endblock %}
+
+</body>
+</html>
+
