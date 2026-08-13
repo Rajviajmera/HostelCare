@@ -62,3 +62,27 @@ class LoginForm(FlaskForm):
 
     submit = SubmitField("Login")
 
+
+from wtforms import FloatField
+
+class ExpenseForm(FlaskForm):
+
+    title = StringField(
+        "Expense Title",
+        validators=[DataRequired()]
+    )
+
+    amount = FloatField(
+        "Amount",
+        validators=[DataRequired()]
+    )
+
+    category = StringField(
+        "Category",
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField(
+        "Add Expense"
+    )
+
