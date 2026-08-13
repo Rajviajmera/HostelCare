@@ -7,3 +7,4 @@ class Config:
         "sqlite:///hostelcare.db"
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
