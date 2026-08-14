@@ -160,3 +160,20 @@ def add_expense():
         form=form
     )
 
+@main.route("/expenses")
+def expenses():
+
+    if "user_id" not in session:
+        return redirect(
+            url_for("main.login")
+        )
+
+    all_expenses = Expense.query.filter_by(
+        user_id=session["user_id"]
+    ).all()
+
+    return render_template(
+        "expenses.html",
+        expenses=all_expenses
+    )
+
