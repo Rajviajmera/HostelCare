@@ -12,9 +12,12 @@ from app.forms import (
     LoginForm
 )
 
-from app.models import User
+from app.models import User, Expense
 from app import db
 
+from app.forms import RegisterForm
+from app.forms import LoginForm
+from app.forms import ExpenseForm
 main = Blueprint(
     "main",
     __name__
@@ -116,5 +119,44 @@ def logout():
 
     return redirect(
         url_for("main.login")
+    )
+
+
+@main.route(
+    "/add-expense",
+    methods=["GET", "POST"]
+)
+def add_expense():
+
+    if "user_id" not in session:
+        return redirect(
+            url_for("main.login")
+        )
+
+    form = ExpenseForm()
+
+    if form.validate_on_submit():
+
+        expense = Expense(
+            title=form.title.data,
+            amount=form.amount.data,
+            category=form.category.data,
+            user_id=session["user_id"]
+        )
+
+        db.session.add(expense)
+        db.session.commit()
+
+        flash(
+            "Expense Added Successfully"
+        )
+
+        return redirect(
+            url_for("main.expenses")
+        )
+
+    return render_template(
+        "add_expense.html",
+        form=form
     )
 
