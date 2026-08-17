@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>My Expenses</h2>
+
+<table border="1">
+
+    <tr>
+        <th>Title</th>
+        <th>Amount</th>
+        <th>Category</th>
+    </tr>
+
+    {% for expense in expenses %}
+
+    <tr>
+        <td>{{ expense.title }}</td>
+        <td>₹{{ expense.amount }}</td>
+        <td>{{ expense.category }}</td>
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+<br>
+
+<a href="{{ url_for('main.add_expense') }}">
+    Add New Expense
+</a>
+
+{% endblock %}
