@@ -8,16 +8,21 @@ from flask import (
 )
 
 from app.forms import (
+    ExpenseForm,
     RegisterForm,
     LoginForm
 )
 
-from app.models import User, Expense
+from flask_login import login_required, current_user 
+
+from app.models import (
+    User,
+    Group,
+    GroupMember,
+    Expense)
 from app import db
 
-from app.forms import RegisterForm
-from app.forms import LoginForm
-from app.forms import ExpenseForm
+
 main = Blueprint(
     "main",
     __name__
@@ -121,17 +126,20 @@ def logout():
         url_for("main.login")
     )
 
+@main.route("/add-expense/<int:group_id>", methods=["GET", "POST"])
+@login_required
+def add_expense(group_id):
 
-@main.route(
-    "/add-expense",
-    methods=["GET", "POST"]
-)
-def add_expense():
+    group = Group.query.get_or_404(group_id)
 
-    if "user_id" not in session:
-        return redirect(
-            url_for("main.login")
-        )
+    member = GroupMember.query.filter_by(
+        user_id=current_user.id,
+        group_id=group_id
+    ).first()
+
+    if not member:
+        flash("You are not a member of this group.", "danger")
+        return redirect(url_for("main.groups"))
 
     form = ExpenseForm()
 
@@ -141,24 +149,28 @@ def add_expense():
             title=form.title.data,
             amount=form.amount.data,
             category=form.category.data,
-            user_id=session["user_id"]
+            paid_by=current_user.id,
+            group_id=group_id
         )
 
         db.session.add(expense)
         db.session.commit()
 
-        flash(
-            "Expense Added Successfully"
-        )
+        flash("Expense added successfully!", "success")
 
         return redirect(
-            url_for("main.expenses")
+            url_for(
+                "main.expenses",
+                group_id=group_id
+            )
         )
 
     return render_template(
         "add_expense.html",
-        form=form
+        form=form,
+        group=group
     )
+
 
 @main.route("/expenses")
 def expenses():
