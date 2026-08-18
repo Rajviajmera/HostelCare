@@ -171,21 +171,67 @@ def add_expense(group_id):
         group=group
     )
 
+@main.route("/expenses/<int:group_id>")
+@login_required
+def expenses(group_id):
 
-@main.route("/expenses")
-def expenses():
+    group = Group.query.get_or_404(group_id)
 
-    if "user_id" not in session:
-        return redirect(
-            url_for("main.login")
-        )
+    member = GroupMember.query.filter_by(
+        user_id=current_user.id,
+        group_id=group_id
+    ).first()
+
+    if not member:
+        flash("You are not a member of this group.", "danger")
+        return redirect(url_for("main.groups"))
 
     all_expenses = Expense.query.filter_by(
-        user_id=session["user_id"]
+        group_id=group_id
+    ).order_by(
+        Expense.date.desc()
     ).all()
 
     return render_template(
         "expenses.html",
-        expenses=all_expenses
+        expenses=all_expenses,
+        group=group
     )
 
+@main.route("/delete-expense/<int:expense_id>", methods=["POST"])
+@login_required
+def delete_expense(expense_id):
+
+    expense = Expense.query.get_or_404(
+        expense_id
+    )
+
+    if expense.paid_by != current_user.id:
+        flash(
+            "You can delete only your own expenses.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "main.expenses",
+                group_id=expense.group_id
+            )
+        )
+
+    group_id = expense.group_id
+
+    db.session.delete(expense)
+    db.session.commit()
+
+    flash(
+        "Expense deleted successfully!",
+        "success"
+    )
+
+    return redirect(
+        url_for(
+            "main.expenses",
+            group_id=group_id
+        )
+    )
