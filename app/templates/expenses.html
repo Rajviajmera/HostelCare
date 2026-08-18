@@ -2,32 +2,85 @@
 
 {% block content %}
 
-<h2>My Expenses</h2>
+<h2>Expenses - {{ group.group_name }}</h2>
 
-<table border="1">
+<a href="{{ url_for('main.add_expense', group_id=group.id) }}">
+    Add New Expense
+</a>
+
+<br>
+<br>
+
+{% if expenses %}
+
+<table border="1" cellpadding="10">
 
     <tr>
         <th>Title</th>
         <th>Amount</th>
         <th>Category</th>
+        <th>Date</th>
+        <th>Action</th>
     </tr>
 
     {% for expense in expenses %}
 
     <tr>
-        <td>{{ expense.title }}</td>
-        <td>₹{{ expense.amount }}</td>
-        <td>{{ expense.category }}</td>
+
+        <td>
+            {{ expense.title }}
+        </td>
+
+        <td>
+            ₹{{ "%.2f"|format(expense.amount) }}
+        </td>
+
+        <td>
+            {{ expense.category }}
+        </td>
+
+        <td>
+            {{ expense.date.strftime("%d-%m-%Y") }}
+        </td>
+
+        <td>
+
+            {% if expense.paid_by == current_user.id %}
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'main.delete_expense',
+                    expense_id=expense.id
+                ) }}"
+            >
+
+                <button type="submit">
+                    Delete
+                </button>
+
+            </form>
+
+            {% else %}
+
+            Not your expense
+
+            {% endif %}
+
+        </td>
+
     </tr>
 
     {% endfor %}
 
 </table>
 
-<br>
+{% else %}
 
-<a href="{{ url_for('main.add_expense') }}">
-    Add New Expense
-</a>
+<p>
+    No expenses added yet.
+</p>
+
+{% endif %}
 
 {% endblock %}
