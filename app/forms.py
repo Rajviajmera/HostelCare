@@ -4,6 +4,7 @@ from flask_wtf import FlaskForm
 
 from wtforms import (
     StringField,
+    FloatField,
     PasswordField,
     SubmitField
 )
@@ -11,7 +12,8 @@ from wtforms import (
 from wtforms.validators import (
     DataRequired,
     Email,
-    EqualTo
+    EqualTo,
+    NumberRange
 )
 
 class RegisterForm(FlaskForm):
