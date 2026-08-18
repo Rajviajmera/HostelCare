@@ -4,6 +4,11 @@
 
 <h2>Add Expense</h2>
 
+<p>
+    Group:
+    <strong>{{ group.group_name }}</strong>
+</p>
+
 <form method="POST">
 
     {{ form.hidden_tag() }}
@@ -32,5 +37,8 @@
 
 </form>
 
-{% endblock %}
+<a href="{{ url_for('main.expenses', group_id=group.id) }}">
+    View Expenses
+</a>
 
+{% endblock %}
