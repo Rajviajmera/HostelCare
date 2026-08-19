@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "rest-client": {
+      "type": "stdio",
+      "command": "C:\\Users\\DELL\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+      "args": [
+        "c:\\Users\\DELL\\.vscode\\extensions\\johncole.restclient-mcp-1.5.1\\dist\\mcp-server.mjs"
+      ],
+      "cwd": "c:\\Users\\DELL\\.vscode\\extensions\\johncole.restclient-mcp-1.5.1"
+    }
+  }
+}
