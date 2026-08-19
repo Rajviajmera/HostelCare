@@ -10,7 +10,8 @@ from flask import (
 from app.forms import (
     ExpenseForm,
     RegisterForm,
-    LoginForm
+    LoginForm,
+    GroupForm
 )
 
 from flask_login import login_required, current_user 
@@ -251,5 +252,33 @@ def groups():
         "groups.html",
         groups=user_groups
     )
+
+
+@main.route("/groups/create", methods=["GET", "POST"])
+def create_group():
+
+    if "user_id" not in session:
+        return redirect(url_for("main.login"))
+
+    form = GroupForm()
+
+    if form.validate_on_submit():
+        group = Group(
+            name=form.name.data,
+            user_id=session["user_id"]
+        )
+        db.session.add(group)
+        db.session.flush()
+
+        db.session.add(GroupMember(
+            group_id=group.id,
+            user_id=session["user_id"]
+        ))
+        db.session.commit()
+
+        flash("Group created successfully!", "success")
+        return redirect(url_for("main.groups"))
+
+    return render_template("create_group.html", form=form)
 
 

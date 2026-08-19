@@ -65,6 +65,16 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Login")
 
 
+class GroupForm(FlaskForm):
+
+    name = StringField(
+        "Group Name",
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField("Create Group")
+
+
 from wtforms import FloatField
 
 class ExpenseForm(FlaskForm):
