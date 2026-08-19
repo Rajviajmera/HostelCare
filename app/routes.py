@@ -235,3 +235,21 @@ def delete_expense(expense_id):
             group_id=group_id
         )
     )
+
+@main.route("/groups")
+@login_required
+def groups():
+
+    user_groups = Group.query.join(
+        GroupMember,
+        Group.id == GroupMember.group_id
+    ).filter(
+        GroupMember.user_id == current_user.id
+    ).all()
+
+    return render_template(
+        "groups.html",
+        groups=user_groups
+    )
+
+
