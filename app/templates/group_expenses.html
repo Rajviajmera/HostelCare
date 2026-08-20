@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>
+    {{ group.name }} - Expenses
+</h2>
+
+<a href="{{ url_for(
+    'main.add_group_expense',
+    group_id=group.id
+) }}">
+    Add Expense
+</a>
+
+<br><br>
+
+<table border="1">
+
+    <tr>
+
+        <th>Title</th>
+        <th>Amount</th>
+        <th>Paid By</th>
+        <th>Date</th>
+
+    </tr>
+
+    {% for expense in expenses %}
+
+    <tr>
+
+        <td>
+            {{ expense.title }}
+        </td>
+
+        <td>
+            ₹{{ expense.amount }}
+        </td>
+
+        <td>
+            {{ expense.paid_by }}
+        </td>
+
+        <td>
+            {{ expense.created_at.strftime(
+                "%d-%m-%Y"
+            ) }}
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock %}
