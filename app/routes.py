@@ -4,7 +4,8 @@ from flask import (
     redirect,
     url_for,
     flash,
-    session
+    session,
+    request
 )
 
 from app.forms import (
@@ -158,15 +159,15 @@ def logout():
     )
 
 
-@main.route("/add-expense/<int:user_id>", methods=["GET", "POST"])
+@main.route("/add-expense/<int:group_id>", methods=["GET", "POST"])
 @login_required
-def add_expense(user_id):
+def add_expense(group_id):
 
-    group = Group.query.get_or_404(user_id)
+    group = Group.query.get_or_404(group_id)
 
     member = GroupMember.query.filter_by(
         user_id=current_user.id,
-        user_id=user_id
+        group_id=group_id
     ).first()
 
     if not member:
@@ -205,13 +206,13 @@ def add_expense(user_id):
 
 @main.route("/expenses/<int:user_id>")
 @login_required
-def expenses(user_id):
+def expenses(group_id):
 
-    group = Group.query.get_or_404(user_id)
+    group = Group.query.get_or_404(group_id)
 
     member = GroupMember.query.filter_by(
         user_id=current_user.id,
-        user_id=user_id
+        group_id=group_id
     ).first()
 
     if not member:
@@ -321,7 +322,7 @@ def create_group():
         db.session.flush()
 
         db.session.add(GroupMember(
-            user_id=group.id,
+            group_id=group.id,
             user_id=current_user.id
         ))
         db.session.commit()

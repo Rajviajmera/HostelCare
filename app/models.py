@@ -3,6 +3,8 @@
 from app import db
 from flask_login import UserMixin
 
+from datetime import datetime
+
 from werkzeug.security import (
     generate_password_hash,
     check_password_hash
@@ -32,10 +34,6 @@ class User(UserMixin, db.Model):
         nullable=False
     )
 
-    created_at = db.Column(
-        db.DateTime
-        default=datetime.utcow
-    )
 
     def set_password(self, password):
         self.password_hash = \
@@ -47,7 +45,7 @@ class User(UserMixin, db.Model):
             password
         )
 
-from datetime import datetime
+
 
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,7 +57,7 @@ class Group(db.Model):
 class GroupMember(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(
+    group_id = db.Column(
         db.Integer,
         db.ForeignKey("group.id"),
         nullable=False
