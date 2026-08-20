@@ -14,13 +14,18 @@ from app.forms import (
     GroupForm
 )
 
-from flask_login import login_required, current_user 
+from flask_login import (
+    login_required, 
+    current_user, 
+    login_user, 
+    logout_user)
 
 from app.models import (
     User,
     Group,
     GroupMember,
     Expense)
+
 from app import db
 
 
@@ -39,14 +44,29 @@ def home():
     "/register",
     methods=["GET", "POST"]
 )
+
 def register():
 
     form = RegisterForm()
 
     if form.validate_on_submit():
 
+        existing_user = User.query.filter_by(
+            email=form.email.data
+        ).first()
+
+        if existing_user:
+
+            flash(
+                "Email already registered."
+            )
+
+            return redirect(
+                url_for("main.login")
+            )
+
         user = User(
-            username=form.username.data,
+            name=form.name.data,
             email=form.email.data
         )
 
@@ -55,9 +75,12 @@ def register():
         )
 
         db.session.add(user)
+
         db.session.commit()
 
-        flash("Registration Successful")
+        flash(
+            "Registration successful."
+        )
 
         return redirect(
             url_for("main.login")
@@ -86,7 +109,7 @@ def login():
             form.password.data
         ):
 
-            session["user_id"] = user.id
+            login_user(user)
 
             return redirect(
                 url_for(
@@ -107,13 +130,20 @@ def login():
 def dashboard():
 
     if "user_id" not in session:
+
         return redirect(
             url_for("main.login")
         )
 
-    return render_template(
-        "dashboard.html"
+    user = User.query.get(
+        session["user_id"]
     )
+
+    return render_template(
+        "dashboard.html",
+        user=user
+    )
+
 
 @main.route("/logout")
 def logout():
@@ -126,6 +156,7 @@ def logout():
     return redirect(
         url_for("main.login")
     )
+
 
 @main.route("/add-expense/<int:group_id>", methods=["GET", "POST"])
 @login_required
@@ -237,42 +268,61 @@ def delete_expense(expense_id):
         )
     )
 
-@main.route("/groups")
-@login_required
+@main.route(
+    "/groups",
+    methods=["GET", "POST"]
+)
 def groups():
 
-    user_groups = Group.query.join(
-        GroupMember,
-        Group.id == GroupMember.group_id
-    ).filter(
-        GroupMember.user_id == current_user.id
+    if "user_id" not in session:
+
+        return redirect(
+            url_for("main.login")
+        )
+
+    if request.method == "POST":
+
+        name = request.form.get("name")
+
+        group = Group(
+            name=name,
+            user_id=session["user_id"]
+        )
+
+        db.session.add(group)
+
+        db.session.commit()
+
+        return redirect(
+            url_for("main.groups")
+        )
+
+    groups = Group.query.filter_by(
+        user_id=session["user_id"]
     ).all()
 
     return render_template(
         "groups.html",
-        groups=user_groups
+        groups=groups
     )
 
 
 @main.route("/groups/create", methods=["GET", "POST"])
+@login_required
 def create_group():
-
-    if "user_id" not in session:
-        return redirect(url_for("main.login"))
-
     form = GroupForm()
 
     if form.validate_on_submit():
         group = Group(
             name=form.name.data,
-            user_id=session["user_id"]
+            user_id=current_user.id
         )
         db.session.add(group)
         db.session.flush()
 
         db.session.add(GroupMember(
             group_id=group.id,
-            user_id=session["user_id"]
+            user_id=current_user.id
         ))
         db.session.commit()
 

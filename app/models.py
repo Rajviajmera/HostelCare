@@ -1,13 +1,14 @@
 #Model = Database Table ka Blueprint
 
 from app import db
+from flask_login import UserMixin
 
 from werkzeug.security import (
     generate_password_hash,
     check_password_hash
 )
 
-class User(db.Model):
+class User(UserMixin, db.Model):
 
     id = db.Column(
         db.Integer,
@@ -29,6 +30,11 @@ class User(db.Model):
     password_hash = db.Column(
         db.String(255),
         nullable=False
+    )
+
+    created_at = db.Column(
+        db.DateTime
+        default=datetime.utcow
     )
 
     def set_password(self, password):
@@ -87,6 +93,11 @@ class Expense(db.Model):
         nullable=False
     )
 
+    paid_by = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
@@ -94,7 +105,8 @@ class Expense(db.Model):
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('user.id')
+        db.ForeignKey('user.id'),
+        nullable=False
     )
 
 

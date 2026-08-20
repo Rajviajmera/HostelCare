@@ -13,7 +13,8 @@ from wtforms.validators import (
     DataRequired,
     Email,
     EqualTo,
-    NumberRange
+    NumberRange,
+    Length
 )
 
 class RegisterForm(FlaskForm):
@@ -33,7 +34,8 @@ class RegisterForm(FlaskForm):
 
     password = PasswordField(
         "Password",
-        validators=[DataRequired()]
+        validators=[DataRequired(),
+                    Length(min=6)]
     )
 
     confirm_password = PasswordField(
