@@ -331,4 +331,60 @@ def create_group():
 
     return render_template("create_group.html", form=form)
 
+@main.route(
+    "/group/<int:group_id>/add-expense",
+    methods=["GET", "POST"]
+)
+def add_group_expense(group_id):
 
+    if "user_id" not in session:
+
+        return redirect(
+            url_for("main.login")
+        )
+
+    group = Group.query.get_or_404(
+        group_id
+    )
+
+    if request.method == "POST":
+
+        title = request.form.get(
+            "title"
+        )
+
+        amount = request.form.get(
+            "amount"
+        )
+
+        paid_by = request.form.get(
+            "paid_by"
+        )
+
+        expense = GroupExpense(
+
+            title=title,
+
+            amount=float(amount),
+
+            paid_by=paid_by,
+
+            group_id=group.id
+
+        )
+
+        db.session.add(expense)
+
+        db.session.commit()
+
+        return redirect(
+            url_for(
+                "main.group_expenses",
+                group_id=group.id
+            )
+        )
+
+    return render_template(
+        "add_group_expense.html",
+        group=group
+    )
