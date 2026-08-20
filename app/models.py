@@ -59,7 +59,7 @@ class Group(db.Model):
 class GroupMember(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-    group_id = db.Column(
+    user_id = db.Column(
         db.Integer,
         db.ForeignKey("group.id"),
         nullable=False

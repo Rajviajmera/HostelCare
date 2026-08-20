@@ -158,15 +158,15 @@ def logout():
     )
 
 
-@main.route("/add-expense/<int:group_id>", methods=["GET", "POST"])
+@main.route("/add-expense/<int:user_id>", methods=["GET", "POST"])
 @login_required
-def add_expense(group_id):
+def add_expense(user_id):
 
-    group = Group.query.get_or_404(group_id)
+    group = Group.query.get_or_404(user_id)
 
     member = GroupMember.query.filter_by(
         user_id=current_user.id,
-        group_id=group_id
+        user_id=user_id
     ).first()
 
     if not member:
@@ -182,7 +182,7 @@ def add_expense(group_id):
             amount=form.amount.data,
             category=form.category.data,
             paid_by=current_user.id,
-            group_id=group_id
+            user_id=user_id
         )
 
         db.session.add(expense)
@@ -193,7 +193,7 @@ def add_expense(group_id):
         return redirect(
             url_for(
                 "main.expenses",
-                group_id=group_id
+                user_id=user_id
             )
         )
 
@@ -203,15 +203,15 @@ def add_expense(group_id):
         group=group
     )
 
-@main.route("/expenses/<int:group_id>")
+@main.route("/expenses/<int:user_id>")
 @login_required
-def expenses(group_id):
+def expenses(user_id):
 
-    group = Group.query.get_or_404(group_id)
+    group = Group.query.get_or_404(user_id)
 
     member = GroupMember.query.filter_by(
         user_id=current_user.id,
-        group_id=group_id
+        user_id=user_id
     ).first()
 
     if not member:
@@ -219,7 +219,7 @@ def expenses(group_id):
         return redirect(url_for("main.groups"))
 
     all_expenses = Expense.query.filter_by(
-        group_id=group_id
+        user_id=user_id
     ).order_by(
         Expense.date.desc()
     ).all()
@@ -247,11 +247,11 @@ def delete_expense(expense_id):
         return redirect(
             url_for(
                 "main.expenses",
-                group_id=expense.group_id
+                user_id=expense.user_id
             )
         )
 
-    group_id = expense.group_id
+    user_id = expense.user_id
 
     db.session.delete(expense)
     db.session.commit()
@@ -264,7 +264,7 @@ def delete_expense(expense_id):
     return redirect(
         url_for(
             "main.expenses",
-            group_id=group_id
+            user_id=user_id
         )
     )
 
@@ -321,7 +321,7 @@ def create_group():
         db.session.flush()
 
         db.session.add(GroupMember(
-            group_id=group.id,
+            user_id=group.id,
             user_id=current_user.id
         ))
         db.session.commit()
@@ -332,10 +332,10 @@ def create_group():
     return render_template("create_group.html", form=form)
 
 @main.route(
-    "/group/<int:group_id>/add-expense",
+    "/group/<int:user_id>/add-expense",
     methods=["GET", "POST"]
 )
-def add_group_expense(group_id):
+def add_group_expense(user_id):
 
     if "user_id" not in session:
 
@@ -344,7 +344,7 @@ def add_group_expense(group_id):
         )
 
     group = Group.query.get_or_404(
-        group_id
+        user_id
     )
 
     if request.method == "POST":
@@ -369,7 +369,7 @@ def add_group_expense(group_id):
 
             paid_by=paid_by,
 
-            group_id=group.id
+            user_id=group.id
 
         )
 
@@ -380,7 +380,7 @@ def add_group_expense(group_id):
         return redirect(
             url_for(
                 "main.group_expenses",
-                group_id=group.id
+                user_id=group.id
             )
         )
 
