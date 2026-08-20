@@ -18,7 +18,7 @@
 
 <a href="{{ url_for(
     'main.group_expenses',
-    group_id=group.id
+    user_id=group.id
 ) }}">
     View Group Expenses
 </a>
@@ -27,7 +27,7 @@
 
 <a href="{{ url_for(
     'main.add_group_expense',
-    group_id=group.id
+    user_id=group.id
 ) }}">
     Add Group Expense
 </a>
