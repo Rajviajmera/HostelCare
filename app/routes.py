@@ -67,7 +67,7 @@ def register():
             )
 
         user = User(
-            name=form.name.data,
+            username=form.username.data,
             email=form.email.data
         )
 
