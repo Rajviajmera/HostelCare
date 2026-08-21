@@ -25,6 +25,7 @@ from app.models import (
     User,
     Group,
     GroupMember,
+    GroupExpense,
     Expense)
 
 from app import db
@@ -387,3 +388,49 @@ def add_group_expense(user_id):
         "add_group_expense.html",
         group=group
     )
+
+
+@main.route(
+    "/delete-group-expense/<int:expense_id>",
+    methods=["POST"]
+)
+def delete_group_expense(expense_id):
+
+    if "user_id" not in session:
+
+        return redirect(
+            url_for("main.login")
+        )
+
+    expense = GroupExpense.query.get_or_404(
+        expense_id
+    )
+
+    group = Group.query.get_or_404(
+        expense.group_id
+    )
+
+    if group.user_id != session["user_id"]:
+
+        flash(
+            "You cannot delete this expense."
+        )
+
+        return redirect(
+            url_for(
+                "main.group_expenses",
+                group_id=group.id
+            )
+        )
+
+    db.session.delete(expense)
+
+    db.session.commit()
+
+    return redirect(
+        url_for(
+            "main.group_expenses",
+            group_id=group.id
+        )
+    )
+
