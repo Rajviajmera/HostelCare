@@ -2,23 +2,19 @@
 
 {% block content %}
 
-<h2>Expenses - {{ group.group_name }}</h2>
+<h2>My Expenses</h2>
 
-<a href="{{ url_for('main.add_expense', user_id=group.id) }}">
-    Add New Expense
-</a>
-
-<br>
-<br>
+<hr>
 
 {% if expenses %}
 
-<table border="1" cellpadding="10">
+<table border="1">
 
     <tr>
         <th>Title</th>
         <th>Amount</th>
         <th>Category</th>
+        <th>Paid By</th>
         <th>Date</th>
         <th>Action</th>
     </tr>
@@ -32,7 +28,7 @@
         </td>
 
         <td>
-            ₹{{ "%.2f"|format(expense.amount) }}
+            ₹{{ expense.amount }}
         </td>
 
         <td>
@@ -40,12 +36,14 @@
         </td>
 
         <td>
-            {{ expense.date.strftime("%d-%m-%Y") }}
+            {{ expense.paid_by }}
         </td>
 
         <td>
+            {{ expense.created_at.strftime("%d-%m-%Y") }}
+        </td>
 
-            {% if expense.user_id == session["user_id"] %}
+        <td>
 
             <form
                 method="POST"
@@ -61,12 +59,6 @@
 
             </form>
 
-            {% else %}
-
-            Not your expense
-
-            {% endif %}
-
         </td>
 
     </tr>
@@ -78,9 +70,21 @@
 {% else %}
 
 <p>
-    No expenses added yet.
+    You have no expenses yet.
 </p>
 
 {% endif %}
+
+<br>
+
+<a href="{{ url_for('main.add_expense') }}">
+    Add New Expense
+</a>
+
+<br><br>
+
+<a href="{{ url_for('main.dashboard') }}">
+    Back to Dashboard
+</a>
 
 {% endblock %}

@@ -4,24 +4,20 @@
 
 <h2>
     Welcome to HostelCare,
-    {{ user.name }}
+    {{ user.username }}
 </h2>
 
 <hr>
 
 <h3>Expense Management</h3>
 
-<a href="{{ url_for(
-    'main.add_expense'
-) }}">
+<a href="{{ url_for('main.add_expense') }}">
     Add Personal Expense
 </a>
 
 <br><br>
 
-<a href="{{ url_for(
-    'main.expenses'
-) }}">
+<a href="{{ url_for('main.expenses') }}">
     View My Expenses
 </a>
 
@@ -29,17 +25,19 @@
 
 <h3>Group Management</h3>
 
-<a href="{{ url_for(
-    'main.groups'
-) }}">
+<a href="{{ url_for('main.groups') }}">
     My Groups
+</a>
+
+<br><br>
+
+<a href="{{ url_for('main.create_group') }}">
+    Create Group
 </a>
 
 <hr>
 
-<a href="{{ url_for(
-    'main.logout'
-) }}">
+<a href="{{ url_for('main.logout') }}">
     Logout
 </a>
 

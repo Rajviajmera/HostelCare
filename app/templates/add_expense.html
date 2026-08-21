@@ -2,12 +2,7 @@
 
 {% block content %}
 
-<h2>Add Expense</h2>
-
-<p>
-    Group:
-    <strong>{{ group.group_name }}</strong>
-</p>
+<h2>Add Personal Expense</h2>
 
 <form method="POST">
 
@@ -37,8 +32,10 @@
 
 </form>
 
-<a href="{{ url_for('main.expenses', user_id=group.id) }}">
-    View Expenses
+<br>
+
+<a href="{{ url_for('main.dashboard') }}">
+    Back to Dashboard
 </a>
 
 {% endblock %}
