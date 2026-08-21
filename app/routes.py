@@ -231,42 +231,40 @@ def expenses(group_id):
         group=group
     )
 
-@main.route("/delete-expense/<int:expense_id>", methods=["POST"])
-@login_required
+@main.route(
+    "/delete-expense/<int:expense_id>",
+    methods=["POST"]
+)
 def delete_expense(expense_id):
+
+    if "user_id" not in session:
+
+        return redirect(
+            url_for("main.login")
+        )
 
     expense = Expense.query.get_or_404(
         expense_id
     )
 
-    if expense.paid_by != current_user.id:
-        flash(
-            "You can delete only your own expenses.",
-            "danger"
-        )
+    if expense.user_id != session["user_id"]:
+
+        flash("You cannot delete this expense.")
 
         return redirect(
-            url_for(
-                "main.expenses",
-                user_id=expense.user_id
-            )
+            url_for("main.expenses")
         )
 
-    user_id = expense.user_id
-
     db.session.delete(expense)
+
     db.session.commit()
 
     flash(
-        "Expense deleted successfully!",
-        "success"
+        "Expense deleted successfully."
     )
 
     return redirect(
-        url_for(
-            "main.expenses",
-            user_id=user_id
-        )
+        url_for("main.expenses")
     )
 
 @main.route(
