@@ -18,12 +18,11 @@
 <table border="1">
 
     <tr>
-
         <th>Title</th>
         <th>Amount</th>
         <th>Paid By</th>
         <th>Date</th>
-
+        <th>Action</th>
     </tr>
 
     {% for expense in expenses %}
@@ -48,6 +47,24 @@
             ) }}
         </td>
 
+        <td>
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'main.delete_group_expense',
+                    expense_id=expense.id
+                ) }}"
+            >
+
+                <button type="submit">
+                    Delete
+                </button>
+
+            </form>
+
+        </td>
+
     </tr>
 
     {% endfor %}
@@ -55,3 +72,4 @@
 </table>
 
 {% endblock %}
+
