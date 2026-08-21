@@ -25,7 +25,6 @@ from app.models import (
     User,
     Group,
     GroupMember,
-    GroupExpense,
     Expense)
 
 from app import db
@@ -128,52 +127,35 @@ def login():
         form=form
     )
 
+
 @main.route("/dashboard")
+@login_required
 def dashboard():
-
-    if "user_id" not in session:
-
-        return redirect(
-            url_for("main.login")
-        )
-
-    user = User.query.get(
-        session["user_id"]
-    )
 
     return render_template(
         "dashboard.html",
-        user=user
+        user=current_user
     )
+
 
 
 @main.route("/logout")
+@login_required
 def logout():
 
-    session.pop(
-        "user_id",
-        None
-    )
+    logout_user()
 
     return redirect(
         url_for("main.login")
     )
 
 
-@main.route("/add-expense/<int:group_id>", methods=["GET", "POST"])
+@main.route(
+    "/add-expense",
+    methods=["GET", "POST"]
+)
 @login_required
-def add_expense(group_id):
-
-    group = Group.query.get_or_404(group_id)
-
-    member = GroupMember.query.filter_by(
-        user_id=current_user.id,
-        group_id=group_id
-    ).first()
-
-    if not member:
-        flash("You are not a member of this group.", "danger")
-        return redirect(url_for("main.groups"))
+def add_expense():
 
     form = ExpenseForm()
 
@@ -184,53 +166,41 @@ def add_expense(group_id):
             amount=form.amount.data,
             category=form.category.data,
             paid_by=current_user.id,
-            user_id=user_id
+            user_id=current_user.id
         )
 
         db.session.add(expense)
         db.session.commit()
 
-        flash("Expense added successfully!", "success")
+        flash(
+            "Expense added successfully!",
+            "success"
+        )
 
         return redirect(
-            url_for(
-                "main.expenses",
-                user_id=user_id
-            )
+            url_for("main.expenses")
         )
 
     return render_template(
         "add_expense.html",
-        form=form,
-        group=group
+        form=form
     )
-
-@main.route("/expenses/<int:user_id>")
+    
+@main.route("/expenses")
 @login_required
-def expenses(group_id):
-
-    group = Group.query.get_or_404(group_id)
-
-    member = GroupMember.query.filter_by(
-        user_id=current_user.id,
-        group_id=group_id
-    ).first()
-
-    if not member:
-        flash("You are not a member of this group.", "danger")
-        return redirect(url_for("main.groups"))
+def expenses():
 
     all_expenses = Expense.query.filter_by(
-        user_id=user_id
+        user_id=current_user.id
     ).order_by(
-        Expense.date.desc()
+        Expense.created_at.desc()
     ).all()
 
     return render_template(
         "expenses.html",
-        expenses=all_expenses,
-        group=group
+        expenses=all_expenses
     )
+
 
 @main.route(
     "/delete-expense/<int:expense_id>",
@@ -248,7 +218,7 @@ def delete_expense(expense_id):
         expense_id
     )
 
-    if expense.user_id != session["user_id"]:
+    if expense.user_id != current_user.id:
 
         flash("You cannot delete this expense.")
 
@@ -361,7 +331,7 @@ def add_group_expense(user_id):
             "paid_by"
         )
 
-        expense = GroupExpense(
+        expense = Expense(
 
             title=title,
 
@@ -369,7 +339,7 @@ def add_group_expense(user_id):
 
             paid_by=paid_by,
 
-            user_id=group.id
+            group_id=group.id
 
         )
 
@@ -402,7 +372,7 @@ def delete_group_expense(expense_id):
             url_for("main.login")
         )
 
-    expense = GroupExpense.query.get_or_404(
+    expense = Expense.query.get_or_404(
         expense_id
     )
 

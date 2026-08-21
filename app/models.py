@@ -92,7 +92,7 @@ class Expense(db.Model):
     )
 
     paid_by = db.Column(
-        db.String(100),
+        db.Integer,
         nullable=False
     )
 
