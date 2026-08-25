@@ -114,6 +114,15 @@ class Expense(db.Model):
         nullable=False
     )
 
+    # HostelCare 2.0
+    # NULL = personal expense
+    # value = group expense
+    group_id = db.Column(
+        db.Integer,
+        db.ForeignKey("group.id"),
+        nullable=True
+    )
+
 
 class Member(db.Model):
 
