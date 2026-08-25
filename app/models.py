@@ -34,6 +34,13 @@ class User(UserMixin, db.Model):
         nullable=False
     )
 
+    # NEW IN HOSTELCARE 2.0
+    is_admin = db.Column(
+        db.Boolean,
+        default=False,
+        nullable=False
+    )
+
 
     def set_password(self, password):
         self.password_hash = \
@@ -124,4 +131,81 @@ class Member(db.Model):
         db.Integer,
         db.ForeignKey('user.id')
     )
+
+# NEW IN HOSTELCARE 2.0
+class Complaint(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    title = db.Column(
+        db.String(150),
+        nullable=False
+    )
+
+    description = db.Column(
+        db.Text,
+        nullable=False
+    )
+
+    category = db.Column(
+        db.String(50),
+        nullable=False
+    )
+
+    visibility = db.Column(
+        db.String(20),
+        nullable=False,
+        default="everyone"
+    )
+
+    status = db.Column(
+        db.String(20),
+        nullable=False,
+        default="pending"
+    )
+
+    admin_note = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+class ComplaintRecipient(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    complaint_id = db.Column(
+        db.Integer,
+        db.ForeignKey("complaint.id"),
+        nullable=False
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
 
