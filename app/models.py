@@ -136,6 +136,11 @@ class Member(db.Model):
         nullable=False
     )
 
+    room_no = db.Column(
+        db.String(20),
+        nullable=True
+    )
+
     user_id = db.Column(
         db.Integer,
         db.ForeignKey('user.id')
