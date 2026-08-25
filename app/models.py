@@ -34,6 +34,7 @@ class User(UserMixin, db.Model):
         nullable=False
     )
 
+    # NEW IN HOSTELCARE 2.0
     is_admin = db.Column(
         db.Boolean,
         default=False,
@@ -131,7 +132,7 @@ class Member(db.Model):
         db.ForeignKey('user.id')
     )
 
-
+# NEW IN HOSTELCARE 2.0
 class Complaint(db.Model):
 
     id = db.Column(
@@ -180,6 +181,25 @@ class Complaint(db.Model):
         db.DateTime,
         default=datetime.utcnow,
         onupdate=datetime.utcnow
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+class ComplaintRecipient(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    complaint_id = db.Column(
+        db.Integer,
+        db.ForeignKey("complaint.id"),
+        nullable=False
     )
 
     user_id = db.Column(
