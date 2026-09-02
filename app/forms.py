@@ -6,7 +6,8 @@ from wtforms import (
     StringField,
     FloatField,
     PasswordField,
-    SubmitField
+    SubmitField,
+    TextAreaField
 )
 
 from wtforms.validators import (
@@ -98,5 +99,53 @@ class ExpenseForm(FlaskForm):
 
     submit = SubmitField(
         "Add Expense"
+    )
+
+class MemberForm(FlaskForm):
+
+    name = StringField(
+        "Member Name",
+        validators=[DataRequired()]
+    )
+
+    room_no = StringField(
+        "Room Number",
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField(
+        "Add Member"
+    )
+
+class AddGroupMemberForm(FlaskForm):
+
+    username = StringField(
+        "Username",
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField(
+        "Add Member"
+    )
+
+class ComplaintForm(FlaskForm):
+
+    title = StringField(
+        "Complaint Title",
+        validators=[DataRequired()]
+    )
+
+    description = TextAreaField(
+        "Complaint Description",
+        validators=[DataRequired()]
+    )
+
+    category = StringField(
+        "Category",
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField(
+        "Submit Complaint"
     )
 
