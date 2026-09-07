@@ -246,52 +246,7 @@ def delete_expense(expense_id):
         url_for("main.expenses")
     )
 
-
-
-    if request.method == "POST":
-
-        name = request.form.get("name")
-
-        group = Group(
-            name=name,
-            user_id=session["user_id"]
-        )
-
-        db.session.add(group)
-
-        db.session.commit()
-
-        return redirect(
-            url_for("main.groups")
-        )
-
-    groups = Group.query.filter_by(
-        user_id=session["user_id"]
-    ).all()
-
-    return render_template(
-        "groups.html",
-        groups=groups
-    )
-
-
-@main.route("/groups/create", methods=["GET", "POST"])
-@login_required
-def create_group():
-    form = GroupForm()
-
-    if form.validate_on_submit():
-        group = Group(
-            name=form.name.data,
-            user_id=current_user.id
-        )
-        db.session.add(group)
-        db.session.flush()
-
-        db.session.add(GroupMember(
-            group_id=group.id,
-            user_id=current_user.id
-        ))@main.route(
+@main.route(
     "/groups",
     methods=["GET", "POST"]
 )
@@ -353,9 +308,58 @@ def create_group():
     )
 
 @main.route(
+    "/group/<int:group_id>"
+)
+@login_required
+def group(group_id):
+
+    group = Group.query.get_or_404(
+        group_id
+    )
+
+    membership = GroupMember.query.filter_by(
+        group_id=group_id,
+        user_id=current_user.id
+    ).first()
+
+    if not membership:
+
+        flash(
+            "You are not a member of this group.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("main.groups")
+        )
+
+    memberships = GroupMember.query.filter_by(
+        group_id=group_id
+    ).all()
+
+    members = []
+
+    for item in memberships:
+
+        user = User.query.get(item.user_id)
+
+        if user:
+            members.append(user)
+
+    form = AddGroupMemberForm()
+
+    return render_template(
+        "group.html",
+        group=group,
+        members=members,
+        form=form
+    )
+
+@main.route(
     "/group/<int:user_id>/add-expense",
     methods=["GET", "POST"]
 )
+@login_required
 def add_group_expense(user_id):
 
     if "user_id" not in session:
