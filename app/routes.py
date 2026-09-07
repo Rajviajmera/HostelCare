@@ -246,17 +246,7 @@ def delete_expense(expense_id):
         url_for("main.expenses")
     )
 
-@main.route(
-    "/groups",
-    methods=["GET", "POST"]
-)
-def groups():
 
-    if "user_id" not in session:
-
-        return redirect(
-            url_for("main.login")
-        )
 
     if request.method == "POST":
 
@@ -301,13 +291,66 @@ def create_group():
         db.session.add(GroupMember(
             group_id=group.id,
             user_id=current_user.id
-        ))
+        ))@main.route(
+    "/groups",
+    methods=["GET", "POST"]
+)
+@main.route("/groups")
+@login_required
+def groups():
+
+    user_groups = Group.query.join(
+        GroupMember,
+        Group.id == GroupMember.group_id
+    ).filter(
+        GroupMember.user_id == current_user.id
+    ).all()
+
+    return render_template(
+        "groups.html",
+        groups=user_groups
+    )
+
+@main.route(
+    "/groups/create",
+    methods=["GET", "POST"]
+)
+@login_required
+def create_group():
+
+    form = GroupForm()
+
+    if form.validate_on_submit():
+
+        group = Group(
+            name=form.name.data,
+            user_id=current_user.id
+        )
+
+        db.session.add(group)
+        db.session.flush()
+
+        membership = GroupMember(
+            group_id=group.id,
+            user_id=current_user.id
+        )
+
+        db.session.add(membership)
         db.session.commit()
 
-        flash("Group created successfully!", "success")
-        return redirect(url_for("main.groups"))
+        flash(
+            "Group created successfully!",
+            "success"
+        )
 
-    return render_template("create_group.html", form=form)
+        return redirect(
+            url_for("main.groups")
+        )
+
+    return render_template(
+        "create_group.html",
+        form=form
+    )
 
 @main.route(
     "/group/<int:user_id>/add-expense",
