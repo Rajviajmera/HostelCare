@@ -412,3 +412,44 @@ def delete_group_expense(expense_id):
         )
     )
 
+
+@main.route(
+    "/members",
+    methods=["GET", "POST"]
+)
+@login_required
+def members():
+
+    form = MemberForm()
+
+    if form.validate_on_submit():
+
+        member = Member(
+            name=form.name.data,
+            room_no=form.room_no.data,
+            user_id=current_user.id
+        )
+
+        db.session.add(member)
+        db.session.commit()
+
+        flash(
+            "Hostel member added successfully!",
+            "success"
+        )
+
+        return redirect(
+            url_for("main.members")
+        )
+
+    member_list = Member.query.filter_by(
+        user_id=current_user.id
+    ).all()
+
+    return render_template(
+        "members.html",
+        form=form,
+        members=member_list
+    )
+
+
