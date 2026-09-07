@@ -499,4 +499,91 @@ def members():
         members=member_list
     )
 
+@main.route(
+    "/group/<int:group_id>/add-member",
+    methods=["POST"]
+)
+@login_required
+def add_group_member(group_id):
+
+    group = Group.query.get_or_404(
+        group_id
+    )
+
+    membership = GroupMember.query.filter_by(
+        group_id=group_id,
+        user_id=current_user.id
+    ).first()
+
+    if not membership:
+
+        flash(
+            "You are not a member of this group.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("main.groups")
+        )
+
+    username = request.form.get(
+        "username"
+    )
+
+    user = User.query.filter_by(
+        username=username
+    ).first()
+
+    if not user:
+
+        flash(
+            "User not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "main.group",
+                group_id=group_id
+            )
+        )
+
+    already_member = GroupMember.query.filter_by(
+        group_id=group_id,
+        user_id=user.id
+    ).first()
+
+    if already_member:
+
+        flash(
+            "User is already a group member.",
+            "warning"
+        )
+
+        return redirect(
+            url_for(
+                "main.group",
+                group_id=group_id
+            )
+        )
+
+    new_member = GroupMember(
+        group_id=group_id,
+        user_id=user.id
+    )
+
+    db.session.add(new_member)
+    db.session.commit()
+
+    flash(
+        "User added to group.",
+        "success"
+    )
+
+    return redirect(
+        url_for(
+            "main.group",
+            group_id=group_id
+        )
+    )
 
