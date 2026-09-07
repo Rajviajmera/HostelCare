@@ -12,7 +12,10 @@ from app.forms import (
     ExpenseForm,
     RegisterForm,
     LoginForm,
-    GroupForm
+    GroupForm,
+    MemberForm,
+    AddGroupMemberForm,
+    ComplaintForm
 )
 
 from flask_login import (
@@ -25,7 +28,12 @@ from app.models import (
     User,
     Group,
     GroupMember,
-    Expense)
+    Expense,
+    Member,
+    Complaint
+    )
+
+from sqlalchemy import or_, and_
 
 from app import db
 
