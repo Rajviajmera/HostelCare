@@ -587,3 +587,41 @@ def add_group_member(group_id):
         )
     )
 
+
+@main.route(
+    "/complaint/new",
+    methods=["GET", "POST"]
+)
+@login_required
+def new_complaint():
+
+    form = ComplaintForm()
+
+    if form.validate_on_submit():
+
+        complaint = Complaint(
+            title=form.title.data,
+            description=form.description.data,
+            category=form.category.data,
+            status="Pending",
+            visibility="admin",
+            created_by=current_user.id
+        )
+
+        db.session.add(complaint)
+        db.session.commit()
+
+        flash(
+            "Complaint submitted successfully!",
+            "success"
+        )
+
+        return redirect(
+            url_for("main.my_complaints")
+        )
+
+    return render_template(
+        "new_complaint.html",
+        form=form
+    )
+
