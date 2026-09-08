@@ -625,3 +625,28 @@ def new_complaint():
         form=form
     )
 
+@main.route("/my-complaints")
+@login_required
+def my_complaints():
+
+    complaints = Complaint.query.filter(
+        or_(
+            Complaint.created_by == current_user.id,
+
+            Complaint.visibility == "everyone",
+
+            and_(
+                Complaint.visibility == "specific",
+                Complaint.target_user_id ==
+                current_user.id
+            )
+        )
+    ).order_by(
+        Complaint.created_at.desc()
+    ).all()
+
+    return render_template(
+        "my_complaints.html",
+        complaints=complaints
+    )
+
