@@ -650,3 +650,32 @@ def my_complaints():
         complaints=complaints
     )
 
+@main.route("/admin/complaints")
+@login_required
+def admin_complaints():
+
+    if not current_user.is_admin:
+
+        flash(
+            "Admin access required.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("main.dashboard")
+        )
+
+    complaints = Complaint.query.order_by(
+        Complaint.created_at.desc()
+    ).all()
+
+    users = User.query.order_by(
+        User.username
+    ).all()
+
+    return render_template(
+        "admin_complaints.html",
+        complaints=complaints,
+        users=users
+    )
+
