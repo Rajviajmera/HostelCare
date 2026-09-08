@@ -679,3 +679,115 @@ def admin_complaints():
         users=users
     )
 
+@main.route(
+    "/admin/complaint/<int:complaint_id>/update",
+    methods=["POST"]
+)
+@login_required
+def update_complaint(complaint_id):
+
+    if not current_user.is_admin:
+
+        flash(
+            "Admin access required.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("main.dashboard")
+        )
+
+    complaint = Complaint.query.get_or_404(
+        complaint_id
+    )
+
+    status = request.form.get(
+        "status"
+    )
+
+    visibility = request.form.get(
+        "visibility"
+    )
+
+    if status not in [
+        "Pending",
+        "Clear",
+        "Unclear"
+    ]:
+
+        flash(
+            "Invalid complaint status.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("main.admin_complaints")
+        )
+
+    if visibility not in [
+        "admin",
+        "everyone",
+        "specific"
+    ]:
+
+        flash(
+            "Invalid complaint visibility.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("main.admin_complaints")
+        )
+
+    complaint.status = status
+    complaint.visibility = visibility
+
+    if visibility == "specific":
+
+        target_user_id = request.form.get(
+            "target_user_id"
+        )
+
+        if not target_user_id:
+
+            flash(
+                "Please select a user.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("main.admin_complaints")
+            )
+
+        target_user = User.query.get(
+            int(target_user_id)
+        )
+
+        if not target_user:
+
+            flash(
+                "Selected user does not exist.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("main.admin_complaints")
+            )
+
+        complaint.target_user_id = target_user.id
+
+    else:
+
+        complaint.target_user_id = None
+
+    db.session.commit()
+
+    flash(
+        "Complaint updated successfully!",
+        "success"
+    )
+
+    return redirect(
+        url_for("main.admin_complaints")
+    )
+
