@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>My Complaints</h2>
+
+<hr>
+
+{% if complaints %}
+
+<table border="1" cellpadding="8">
+
+    <tr>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Visibility</th>
+        <th>Date</th>
+    </tr>
+
+    {% for complaint in complaints %}
+
+    <tr>
+
+        <td>
+            {{ complaint.title }}
+        </td>
+
+        <td>
+            {{ complaint.category }}
+        </td>
+
+        <td>
+            {{ complaint.status }}
+        </td>
+
+        <td>
+            {{ complaint.visibility }}
+        </td>
+
+        <td>
+            {{ complaint.created_at.strftime("%d-%m-%Y") }}
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% else %}
+
+<p>
+    No complaints found.
+</p>
+
+{% endif %}
+
+<br>
+
+<a href="{{ url_for('main.new_complaint') }}">
+    File New Complaint
+</a>
+
+<br><br>
+
+<a href="{{ url_for('main.dashboard') }}">
+    Back to Dashboard
+</a>
+
+{% endblock %}
